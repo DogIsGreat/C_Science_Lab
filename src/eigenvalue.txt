@@ -35,11 +35,11 @@ int main(){
     // Fill matrix A and vector b based on discretized heat equation.
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
-            if (i == j){
-                gsl_matrix_set(A, i, j, -2.0); // Diagonal Elements
-            } else if (i == j -1 || i == j +1){
+            if (i == j){// Diagonal Elements
+                gsl_matrix_set(A, i, j, -2.0); 
+            } else if (i == j -1 || i == j +1){ // Off Diagonal Elements
                 gsl_matrix_set(A, i, j, 1.0);
-            } else {
+            } else { // Other elements are zero
                 gsl_matrix_set(A, i, j, 0.0);
             }
         }
@@ -49,9 +49,8 @@ int main(){
         } else if (i == N -1 ){
             gsl_vector_set(b, i , -ambientTemp);
         } else {
-            gsl_vector_set(b, i, 0.0);
+            gsl_vector_set(b, i, 0.0); // No source or sink in interior segments.
         }
-
     }
 
 
