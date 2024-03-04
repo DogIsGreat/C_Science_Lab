@@ -13,8 +13,6 @@ int main(){
     int O = 0;
     int P = 0;
 
-    
-
     char file1[256];
     char file2[256];
     
@@ -51,17 +49,16 @@ int main(){
     */
 
     // File loading of Matrix Values.
-    count_rows_cols(&file1, &M, &N);
-    count_rows_cols(&file2, &O, &P);
+    count_rows_cols(file1, &M, &N);
+    count_rows_cols(file2, &O, &P);
 
     if( M == N && N == O && N == P){
-        load_data(&file1, A);
-        load_data(&file2, B);
+        load_data(file1, A);
+        load_data(file2, B);
     } else {
         printf("You must provide 2 square matrixes for this program as of now.\n");
     }
 
-    
     //gsl_matrix_add(A, B);
     gsl_matrix_mul_elements(A,B);
     double max = gsl_matrix_max(A);

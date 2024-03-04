@@ -1,9 +1,17 @@
+UNAME_S := $(shell uname -s)
+
 #Header components, Flags, Sources, Libraries, and Locations to be compiled.
 CC=clang 
-###Extra c flags
-CFLAGS=-g -O2  -Wall -Wextra -Isrc  $(OPTFLAGS)
-INCLUDES=-I/opt/homebrew/opt/gsl/include 
-LDLIBS=-L/opt/homebrew/opt/gsl/lib $(OPTLIBS)
+###Extra c flags  -Isrc
+CFLAGS=-g -O0  -Wall -Wextra   $(OPTFLAGS)
+ifeq ($(UNAME_S),Darwin)
+	INCLUDES=-I/opt/homebrew/opt/gsl/include 
+	LDLIBS=-L/opt/homebrew/opt/gsl/lib $(OPTLIBS)
+endif
+ifeq ($(UNAME_S),Linux)
+	INCLUDES=-I/usr/include/gsl
+	LDLIBS=-L/usr/lib64 $(OPTLIBS)
+endif
 LIBS=-lgsl -lgslcblas -lm $(OPTLIBS)
 
 SOURCES=$(wildcard src/**/*.c src/*.c)
@@ -13,11 +21,11 @@ TEST_SRC=$(wildcard tests/*_tests.c)
 TESTS=$(patsubst %.c,%,$(TEST_SRC))
 
 ###Change TARGET
-TARGET=build/PartiallyChewedBones
+TARGET=build/ScienceDog
 SO_TARGET=$(patsubst %.a,%.so,$(TARGET))
 
 ###Change EXECUTABLE
-EXECUTABLE=bin/PartiallyChewedBones
+EXECUTABLE=bin/ScienceDog
 
 #Target Build Components and Flag options
 .PHONY: all dev clean install
@@ -39,6 +47,24 @@ $(TARGET): build $(OBJECTS)
 	ranlib $@
 $(SO_TARGET): $(TARGET) $(OBJECTS)
 	$(CC) -shared -o $@ $(OBJECTS) $(INCLUDES) $(LDLIBS) $(LIBS)
+
+debug: $(TARGET)
+ifeq ($(UNAME_S),Darwin)
+	lldb ./$(TARGET)
+endif
+ifeq ($(UNAME_S),Linux)
+	gdb ./$(TARGET)
+endif
+	
+
+memcheck: $(TARGET)
+ifeq ($(UNAME_S),Darwin)
+	leaks --atExit ./$(TARGET)
+endif
+ifeq ($(UNAME_S),Linux)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TARGET)
+endif
+	
 
 build:
 	@mkdir -p build

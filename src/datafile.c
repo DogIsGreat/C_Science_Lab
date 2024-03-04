@@ -15,7 +15,8 @@ void count_rows_cols(const char *filename, int *rows, int *cols){
         exit(1);
     }
 
-    char buffer[1024];
+    //char buffer[1024];
+    char* buffer= malloc(1024*sizeof(char));
     int row_count = 0;
     int col_count =0;
 
@@ -36,6 +37,7 @@ void count_rows_cols(const char *filename, int *rows, int *cols){
     if(row_count != col_count){
         log_err("Not a square matrix: row:column =  %d:%d name = %s ", row_count, col_count, filename);
     }
+    free(buffer);
 
 }
 
@@ -48,17 +50,26 @@ void load_data(const char *filename, gsl_matrix *m){
     }
 
     int row = 0; 
-    char buffer[1024];
+    //char buffer[1024];
+    char* buffer= malloc(1024*sizeof(char));
+
+
 
     while (fgets(buffer, 1024, file)){
         int col = 0;
         char *value = strtok(buffer, ",");
+
         while (value){
-            gsl_matrix_set(m, row, col, atof(value));
-            value = strtok(NULL, ",");
-            col++;
+            if (row >= 0 && row < (int)m->size1 && col >= 0 && col < (int)m->size2) {
+                gsl_matrix_set(m, row, col, atof(value));
+                value = strtok(NULL, ",");
+                col++;
+            } else {
+            log_err("Attempt to access [%d, %d] out of matrix bounds.\n", row, col);
+            }
         }
         row++;
     }
     fclose(file);
+    free(buffer);
 }
