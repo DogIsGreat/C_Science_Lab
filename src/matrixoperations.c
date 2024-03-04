@@ -24,8 +24,8 @@ int main(){
     getchar();
     printf("%s\n", file1);
 
-    gsl_matrix *A = gsl_matrix_alloc(M,N);
-    gsl_matrix *B = gsl_matrix_alloc(O,P);
+    //gsl_matrix *A = gsl_matrix_alloc(M,N);
+    //gsl_matrix *B = gsl_matrix_alloc(O,P);
 
     /* Manual Setting of Matrix values
     gsl_matrix_set(A, 0, 0, 1);
@@ -45,12 +45,15 @@ int main(){
         for (int j = 0; j < N; j++){
             gsl_matrix_set(A, i, j, value * parameter);
         }
-    }
+    }b
     */
 
     // File loading of Matrix Values.
     count_rows_cols(file1, &M, &N);
     count_rows_cols(file2, &O, &P);
+
+    gsl_matrix *A = gsl_matrix_alloc(M,N);
+    gsl_matrix *B = gsl_matrix_alloc(O,P);
 
     if( M == N && N == O && N == P){
         load_data(file1, A);
