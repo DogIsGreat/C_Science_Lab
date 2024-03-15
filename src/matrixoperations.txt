@@ -4,6 +4,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_linalg.h>
+#include <gsl/gsl_eigen.h>
 #include <gsl/gsl_errno.h>
 
 int main(){
@@ -23,9 +24,6 @@ int main(){
     scanf("%255s", file2);
     getchar();
     printf("%s\n", file1);
-
-    //gsl_matrix *A = gsl_matrix_alloc(M,N);
-    //gsl_matrix *B = gsl_matrix_alloc(O,P);
 
     /* Manual Setting of Matrix values
     gsl_matrix_set(A, 0, 0, 1);
@@ -108,6 +106,37 @@ int main(){
             printf("\n");
         }
         gsl_matrix_free(inverse);
+    }
+
+    // Find the eigenvalues and eigenvectors of B
+    if(M == N && N == O && N == P ){
+        gsl_vector *eval = gsl_vector_alloc(N);
+        gsl_matrix *evec = gsl_matrix_alloc(N, N);
+
+        gsl_eigen_symmv_workspace *w = gsl_eigen_symmv_alloc(N);
+        gsl_eigen_symmv(B, eval, evec, w);
+
+        gsl_eigen_symmv_free(w);
+    
+
+    // Output of eigenvalues and eigenvectors
+        for(int i = 0; i < N; i++){
+            double eigenvalue = gsl_vector_get(eval, i);
+            gsl_vector_view eigenvector = gsl_matrix_column(evec, i);
+            printf("Eigenvalue: %g\n", eigenvalue);
+            printf("Eigenvector: \n");
+            printf(" ( ");
+            for (int j = 0; j < N; j++){
+                if(j < N-1){
+                printf("%g, ", gsl_vector_get(&eigenvector.vector, j));
+                } else {
+                printf("%g ", gsl_vector_get(&eigenvector.vector, j));
+                }
+            }
+            printf(")\n");
+        }
+    } else {
+        printf("The matrix is not symmetric and new functionality must be added to handle non-symmetric matrix. \n");
     }
 
     gsl_matrix_free(A);
